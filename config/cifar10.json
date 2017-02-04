@@ -1,0 +1,13 @@
+{
+  "classifier": {
+    "num_epochs": 250,
+    "decay_step": 50
+  },
+
+  "vae": {
+    "num_epochs": 500,
+    "samples": 100,
+    "decay_step": 200,
+    "learning_rate": 0.001
+  }
+}

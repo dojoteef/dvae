@@ -1,0 +1,6 @@
+{
+  "learning_rate": 0.01,
+  "batch_size": 64,
+  "metric_frequency": 1000,
+  "validation_frequency": 5000
+}
