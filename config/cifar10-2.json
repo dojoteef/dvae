@@ -6,7 +6,7 @@
 
   "vae": {
     "num_epochs": 500,
-    "samples": 1,
+    "samples": 5,
     "sample_size": 100,
     "decay_step": 200,
     "learning_rate": 0.001

@@ -6,7 +6,7 @@
 
   "vae": {
     "num_epochs": 250,
-    "samples": 1,
+    "samples": 5,
     "sample_size": 50,
     "decay_step": 50
   }

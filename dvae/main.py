@@ -58,12 +58,14 @@ def generate_vae(model_factory, model_kwargs, config):
 
     vae = model_factory.define_model(
         'vae', scope=scope_prefix,
-        samples=config.samples, recognition=vae_recognition,
+        sample_size=config.sample_size,
+        samples=config.samples,
+        recognition=vae_recognition,
         **model_kwargs)
 
     vae_generation = model_factory.define_model(
         'generation', scope='{0}/generator'.format(scope_prefix),
-        input_tensor_or_shape=vae.prior,
+        input_tensor_or_shape=vae.posterior,
         channels=channels, hidden=hidden[::-1],
         **model_kwargs)
 

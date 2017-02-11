@@ -19,6 +19,7 @@ from __future__ import division
 from __future__ import print_function
 
 import tensorflow as tf
+import tensorflow.contrib.distributions as distributions
 
 from dvae.models.factory import Model
 from dvae.models.factory import ModelFactoryFunction
@@ -29,7 +30,8 @@ class VariationalAutoencoderModelFactory(ModelFactoryFunction):
     def __init__(self, dataset, dtype):
         super(VariationalAutoencoderModelFactory, self).__init__(dataset, dtype)
 
-    def define_model(self, graph, samples=20, recognition=None, reuse=None, **kwargs):
+    def define_model(self, graph, sample_size=20, samples=1,
+                     recognition=None, reuse=None, **kwargs):
         """
         Define a VariationalAutoencoderModel.
 
@@ -37,7 +39,8 @@ class VariationalAutoencoderModelFactory(ModelFactoryFunction):
         https://arxiv.org/pdf/1312.6114v10.pdf
 
         Args:
-            samples: The number of samples from the unit Gaussian
+            sample_size: The size of the samples from the approximate posterior
+            samples: The number of samples approximate posterior
             recognition: Model to generate q(z|x). Required parameter.
             the model, but can be set later on the VariationalAutoencoderModel.
             reuse: Whether to reuse variables
@@ -50,30 +53,28 @@ class VariationalAutoencoderModelFactory(ModelFactoryFunction):
 
         with tf.variable_scope('mean', reuse=reuse):
             mean = self.linear_layers(
-                recognition.output_tensor, (samples), reuse=reuse)[-1]
+                recognition.output_tensor, (sample_size), reuse=reuse)[-1]
 
         with tf.variable_scope('log_variance', reuse=reuse):
             log_variance = self.linear_layers(
-                recognition.output_tensor, (samples), reuse=reuse)[-1]
+                recognition.output_tensor, (sample_size), reuse=reuse)[-1]
 
-        kl_divergence = tf.mul(0.5, tf.reduce_sum(
-            tf.square(mean) + tf.exp(log_variance)
-            - log_variance - 1, 1), name='kl_divergence')
+        p_z = distributions.Normal(0.0, 1.0, name='P_z')
+        q_z = distributions.Normal(mean, tf.sqrt(tf.exp(log_variance)), name='Q_z')
 
-        sampled = tf.random_normal(tf.shape(log_variance), 0, 1, dtype=self.dtype)
-        prior = mean + tf.sqrt(tf.exp(log_variance)) * sampled
-
-        return VariationalAutoencoderModel(graph, recognition, prior, kl_divergence)
+        posterior = tf.reduce_mean(q_z.sample(samples), 0)
+        kl_divergence = tf.reduce_sum(distributions.kl(q_z, p_z), 1)
+        return VariationalAutoencoderModel(graph, recognition, posterior, kl_divergence)
 
 
 class VariationalAutoencoderModel(Model):
     """ An instance of an image classification model. """
-    def __init__(self, graph, recognition, prior, kl_divergence):
+    def __init__(self, graph, recognition, posterior, kl_divergence):
         super(VariationalAutoencoderModel, self).__init__(graph, None, {})
 
         self.kl_divergence = kl_divergence
 
-        self.prior = prior
+        self.posterior = posterior
         self._generation = None
         self.recognition = recognition
         self._placeholders['inputs'] = recognition.inputs

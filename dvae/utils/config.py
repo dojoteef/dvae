@@ -73,11 +73,18 @@ def _json_parser():
         help='The number of steps between updating metrics, 0 disable metrics'
     )
     parser.add_argument(
-        '--samples',
+        '--sample_size',
         type=int,
         default=20,
         action='store',
-        help='The number of samples for the latent space'
+        help='The size of the samples from the latent space'
+    )
+    parser.add_argument(
+        '--samples',
+        type=int,
+        default=1,
+        action='store',
+        help='The number of samples from the latent space'
     )
     parser.add_argument(
         '--trace_frequency',

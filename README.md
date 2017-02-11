@@ -13,9 +13,9 @@ referred to as the denoising variational autoencoder (DVAE).
 
 ## Methods
 
-This project was created in [Tensorflow] partly as a way to familiarize myself
-with it. [Tensorflow] should be the only requirement for running the underlying
-code.
+This project was created in [Tensorflow] ([version 0.12.1](https://github.com/tensorflow/tensorflow/releases/tag/0.12.1)) partly as a way to
+familiarize myself with it. [Tensorflow] should be the only requirement for
+running the underlying code.
 
 ### Datasets
 There are two test datasets used for this project, the [MNIST] dataset and the
@@ -25,8 +25,8 @@ There are two test datasets used for this project, the [MNIST] dataset and the
 For both the VAE and the DAE the recognition model is composed of a
 convolutional neural network (CNN) with a batch normalization layer before each
 activation function. The generative model similarly uses batch normalization,
-but is a deconvolutional network. The VAE uses a latent space of 50 samples for
-the [MNIST] dataset and 100 samples for the [CIFAR-10] dataset.
+but is a deconvolutional network (DN). The VAE uses a latent space of 50
+samples for the [MNIST] dataset and 100 samples for the [CIFAR-10] dataset.
 
 ### Training procedure
 The input from the dataset is feed into a VAE. The variational lower bound is
@@ -48,12 +48,18 @@ used as a hold out validation set, and there are 10000 test images.
 For the [CIFAR-10] dataset there are 50000 training images, of which 5000 were
 used as a hold out validation set, and there are 10000 test images.
 
-| Model |  Dataset | Testing Loss | Testing KLD |
-|:------|:---------|-------------:|------------:|
-|  VAE  |   MNIST  | 74.248       | 20.900      |
-| DVAE  |   MNIST  | 71.648       | 25.728      |
-|  VAE  | CIFAR-10 | 1811.562     | 35.668      |
-| DVAE  | CIFAR-10 | 1790.816     | 52.144      |
+**Model Loss and KL-divergence**
+
+| Model |  Dataset | Samples | Testing Loss | Testing KLD |
+|:------|:---------|--------:|-------------:|------------:|
+|  VAE  |   MNIST  | 1       | 74.248       | 20.900      |
+| DVAE  |   MNIST  | 1       | 71.648       | 25.728      |
+|  VAE  |   MNIST  | 5       | 68.786       | 14.333      |
+| DVAE  |   MNIST  | 5       | 65.132       | 19.581      |
+|  VAE  | CIFAR-10 | 1       | 1811.562     | 35.668      |
+| DVAE  | CIFAR-10 | 1       | 1790.816     | 52.144      |
+|  VAE  | CIFAR-10 | 5       | 1787.758     | 24.735      |
+| DVAE  | CIFAR-10 | 5       | 1783.657     | 35.619      |
 
 
 As an additional way to measure performance of the resultant models a separate
@@ -62,19 +68,31 @@ entropy loss. The images generated from the VAE and DVAE were fed to the
 classification model to determine the classification error rate of the two
 autoencoder networks.
 
-| Model |  Dataset | Testing Error Rate |
-|:------|:---------|-------------------:|
-|  CNN  |   MNIST  | 1.01%              |
-|  VAE  |   MNIST  | 3.85%              |
-| DVAE  |   MNIST  | 2.99%              |
-|  CNN  | CIFAR-10 | 22.23%             |
-|  VAE  | CIFAR-10 | 71.84%             |
-| DVAE  | CIFAR-10 | 70.61%             |
+**CNN Classification Error**
+
+|  Dataset | Testing Error Rate |
+|:---------|-------------------:|
+|   MNIST  | 1.01%              |
+| CIFAR-10 | 22.23%             |
+
+**Generated Image Classification Error**
+
+| Model |  Dataset | Samples | Testing Error Rate |
+|:------|:---------|--------:|-------------------:|
+|  VAE  |   MNIST  | 1       | 3.85%              |
+| DVAE  |   MNIST  | 1       | 2.99%              |
+|  VAE  |   MNIST  | 5       | 2.16%              |
+| DVAE  |   MNIST  | 5       | 1.66%              |
+|  VAE  | CIFAR-10 | 1       | 71.84%             |
+| DVAE  | CIFAR-10 | 1       | 70.61%             |
+|  VAE  | CIFAR-10 | 5       | 71.76%             |
+| DVAE  | CIFAR-10 | 5       | 70.61%             |
 
 
 #### MNIST
 Here are the graphs of the loss and KL divergence on the validation set over
-time during training of the VAE and DVAE models on the MNIST dataset:
+time during training of the VAE and DVAE models on the MNIST dataset
+(***samples=1***):
 
 **MNIST Loss**
 
@@ -85,7 +103,7 @@ time during training of the VAE and DVAE models on the MNIST dataset:
 ![MNIST kld](images/mnist/kld.png "MNIST KL divergence")
 
 These are example inputs and outputs from the VAE and DVAE models on the
-testing dataset:
+testing dataset (***samples=1***):
 
 | Input       | VAE Output | DVAE Output |
 |:------------|------------|-------------|
@@ -94,7 +112,8 @@ testing dataset:
 
 #### CIFAR-10
 Here are the graphs of the loss and KL divergence on the validation set over
-time during training of the VAE and DVAE models on the CIFAR-10 dataset:
+time during training of the VAE and DVAE models on the CIFAR-10 dataset
+(***samples=1***):
 
 **CIFAR-10 Loss**
 
@@ -105,7 +124,7 @@ time during training of the VAE and DVAE models on the CIFAR-10 dataset:
 ![CIFAR-10 kld](images/cifar10/kld.png "CIFAR-10 KL divergence")
 
 These are example inputs and outputs from the VAE and DVAE models on the
-CIFAR-10 testing dataset:
+CIFAR-10 testing dataset (***samples=1***):
 
 | Input          | VAE Output   | DVAE Output   |
 |:---------------|--------------|---------------|
